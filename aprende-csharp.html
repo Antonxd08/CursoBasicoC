@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aprende C# viendo cómo funciona</title>
+<style>
+:root{--bg:#eef0f7;--ink:#1b1b3a;--mut:#5b5f7a;--card:#fff;--pur:#6a3fc7;--pur2:#e6defa;--yel:#ffc93c;--grn:#1f9d63;--red:#d6455d;--code:#1e1b33;--line:#d5d8e8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Segoe UI",system-ui,sans-serif}
+.mono,code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+header{background:var(--code);color:#fff;padding:56px 20px 48px}
+.wrap{max-width:920px;margin:0 auto}
+header h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;margin:0 0 12px}
+header p{color:#c9c4e6;max-width:560px;margin:0}
+.hello{margin-top:26px;background:#2b2748;border-radius:10px;padding:16px 18px;font-size:.95rem;display:inline-block;min-width:min(100%,420px)}
+.hello .k{color:#c792ea}.hello .s{color:#a5e075}.hello .t{color:#7fd1ff}
+.cur{display:inline-block;width:9px;height:1em;background:var(--yel);vertical-align:-2px;animation:b 1s steps(2) infinite}
+@keyframes b{50%{opacity:0}}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 12px}
+nav a{padding:12px 14px;color:var(--ink);text-decoration:none;white-space:nowrap;font-weight:600;font-size:.95rem;border-bottom:3px solid transparent}
+nav a:hover,nav a:focus-visible{border-color:var(--pur);outline:none}
+section{padding:44px 20px 8px}
+h2{font-size:1.9rem;margin:0 0 6px}
+.lead{color:var(--mut);margin:0 0 22px;max-width:640px}
+.lab{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.lab{grid-template-columns:1fr}}
+pre{background:var(--code);color:#e8e6f5;border-radius:10px;padding:14px 0;margin:0;font-size:.9rem;overflow-x:auto}
+pre .ln{display:block;padding:0 16px;border-left:4px solid transparent;white-space:pre}
+pre .ln.on{background:#3a3170;border-left-color:var(--yel)}
+.k{color:#c792ea}.s{color:#a5e075}.t{color:#7fd1ff}.c{color:#8b87a8}
+label{font-weight:600;font-size:.9rem;display:block;margin:0 0 4px}
+select,input[type=text]{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--pur)}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 16px;background:var(--pur);color:#fff;cursor:pointer}
+button.alt{background:var(--pur2);color:var(--pur)}
+button:hover{filter:brightness(1.08)}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+.row{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.row>*{flex:1;min-width:110px}
+.row button{flex:0 0 auto}
+.console{background:#0f0d1f;color:#a5e075;border-radius:10px;padding:12px 14px;min-height:74px;font-size:.9rem;margin-top:12px;white-space:pre-wrap}
+.console b{color:#8b87a8;font-weight:400}
+.err{color:#ff8fa3}
+/* memoria */
+#mem{display:flex;flex-wrap:wrap;gap:12px;min-height:110px;align-content:flex-start;margin-top:8px}
+.box{width:112px;border:2px solid var(--pur);border-radius:10px;background:var(--pur2);text-align:center;overflow:hidden;animation:pop .35s}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.box .ty{background:var(--pur);color:#fff;font-size:.75rem;padding:2px}
+.box .va{padding:10px 4px;font-weight:700;font-size:1.05rem;word-break:break-all}
+.box .na{border-top:1px dashed var(--pur);font-size:.8rem;padding:3px;background:#fff}
+.empty{color:var(--mut);font-size:.9rem}
+/* flujo if */
+.flow{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.node{border:2px solid var(--line);border-radius:10px;padding:8px 12px;font-size:.92rem;transition:.25s;background:#fff}
+.node.on{border-color:var(--grn);background:#dff5ea;font-weight:700;transform:translateX(6px)}
+.node.q{border-style:dashed}
+.big{font-size:2.6rem;font-weight:800;color:var(--pur);line-height:1}
+/* for */
+.cells{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.cell{width:42px;height:42px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--mut);transition:.2s;background:#fff}
+.cell.done{background:var(--pur);border-color:var(--pur);color:#fff}
+.cell.now{background:var(--yel);border-color:var(--yel);color:var(--ink);transform:translateY(-6px)}
+.state{display:flex;gap:10px;flex-wrap:wrap;font-size:.9rem}
+.state span{background:var(--pur2);border-radius:6px;padding:3px 10px}
+/* quiz */
+.q{margin:0 0 18px}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.opts button{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.opts button.ok{background:#dff5ea;border-color:var(--grn)}
+.opts button.no{background:#fde4e8;border-color:var(--red)}
+footer{padding:40px 20px;color:var(--mut);text-align:center;font-size:.9rem}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Aprende C# viendo<br>cómo funciona por dentro</h1>
+<p>Cada tema tiene un laboratorio: cambia valores, pulsa botones y observa qué hace el programa paso a paso.</p>
+<div class="hello mono"><span class="t">Console</span>.WriteLine(<span class="s">"<span id="typed"></span>"</span>);<span class="cur"></span></div>
+</div></header>
+
+<nav><div class="wrap">
+<a href="#vars">Variables</a><a href="#if">Condicionales</a><a href="#for">Ciclos</a><a href="#quiz">Practica</a>
+</div></nav>
+
+<section id="vars"><div class="wrap">
+<h2>Variables: cajas con nombre</h2>
+<p class="lead">Una variable es una caja en la memoria. Tiene un <b>tipo</b> (qué puede guardar), un <b>nombre</b> y un <b>valor</b>. Crea las tuyas.</p>
+<div class="lab">
+<div>
+<label for="vt">Tipo</label>
+<select id="vt">
+<option value="int">int — número entero</option>
+<option value="double">double — número con decimales</option>
+<option value="string">string — texto</option>
+<option value="bool">bool — verdadero/falso</option>
+<option value="char">char — una letra</option>
+</select>
+<div class="row">
+<div><label for="vn">Nombre</label><input type="text" id="vn" value="edad"></div>
+<div><label for="vv">Valor</label><input type="text" id="vv" value="15"></div>
+</div>
+<div class="row"><button id="vgo">Declarar variable</button><button class="alt" id="vclr">Vaciar memoria</button></div>
+<pre><span class="ln" id="vcode"><span class="c">// tu código aparecerá aquí</span></span></pre>
+<div class="console" id="vout"><b>Compilador:</b> esperando…</div>
+</div>
+<div><label>Memoria del programa</label><div id="mem"><span class="empty">Aún no hay variables.</span></div></div>
+</div>
+</div></section>
+
+<section id="if"><div class="wrap">
+<h2>Condicionales: el programa decide</h2>
+<p class="lead">Con <code>if</code> el programa toma un camino u otro. Mueve la nota y mira qué rama se activa.</p>
+<div class="lab">
+<div>
+<label for="nota">Nota: <span id="nv" class="mono">7</span></label>
+<input type="range" id="nota" min="0" max="10" value="7">
+<pre style="margin-top:12px"><span class="ln" data-l="0"><span class="t">int</span> nota = <span id="nc">7</span>;</span><span class="ln" data-l="1"><span class="k">if</span> (nota &gt;= 9)</span><span class="ln" data-l="2">    <span class="t">Console</span>.WriteLine(<span class="s">"Excelente"</span>);</span><span class="ln" data-l="3"><span class="k">else if</span> (nota &gt;= 6)</span><span class="ln" data-l="4">    <span class="t">Console</span>.WriteLine(<span class="s">"Aprobado"</span>);</span><span class="ln" data-l="5"><span class="k">else</span></span><span class="ln" data-l="6">    <span class="t">Console</span>.WriteLine(<span class="s">"Reprobado"</span>);</span></pre>
+</div>
+<div>
+<div class="flow">
+<div class="node q" id="f0">¿nota &gt;= 9?</div>
+<div class="node" id="f1">Sí → Excelente</div>
+<div class="node q" id="f2">No → ¿nota &gt;= 6?</div>
+<div class="node" id="f3">Sí → Aprobado</div>
+<div class="node" id="f4">No → Reprobado</div>
+</div>
+<div class="console" id="iout"></div>
+</div>
+</div>
+</div></section>
+
+<section id="for"><div class="wrap">
+<h2>Ciclos: repetir sin copiar y pegar</h2>
+<p class="lead">Un <code>for</code> repite instrucciones. Avanza una vuelta a la vez y fíjate cómo cambia <code>i</code>.</p>
+<div class="lab">
+<div>
+<label for="n">Repeticiones (n): <span id="nn" class="mono">5</span></label>
+<input type="range" id="n" min="1" max="12" value="5">
+<pre style="margin:12px 0"><span class="ln" data-f="0"><span class="k">for</span> (<span class="t">int</span> i = 0; i &lt; <span id="fc">5</span>; i++)</span><span class="ln" data-f="1">{</span><span class="ln" data-f="2">    <span class="t">Console</span>.WriteLine(<span class="s">"Vuelta "</span> + i);</span><span class="ln" data-f="3">}</span></pre>
+<div class="row"><button id="fstep">Siguiente paso</button><button class="alt" id="fplay">▶ Auto</button><button class="alt" id="freset">Reiniciar</button></div>
+</div>
+<div>
+<div class="state mono"><span>i = <b id="si">–</b></span><span>i &lt; n → <b id="sc">–</b></span></div>
+<div class="cells" id="cells"></div>
+<div class="console mono" id="fout"></div>
+</div>
+</div>
+</div></section>
+
+<section id="quiz"><div class="wrap">
+<h2>Ponte a prueba</h2>
+<p class="lead">Elige una respuesta para ver si acertaste.</p>
+<div class="lab" style="display:block" id="qz"></div>
+</div></section>
+
+<footer>Hecho para aprender C#. Prueba lo que ves aquí en Visual Studio o en <span class="mono">dotnetfiddle.net</span>.</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+// Título escrito
+(function(){const t="¡Hola, mundo!";let i=0;const e=$("typed");(function n(){if(i<=t.length){e.textContent=t.slice(0,i++);setTimeout(n,90)}})()})();
+
+// ===== Variables =====
+const ph={int:["edad","15"],double:["precio","19.5"],string:["nombre","Ana"],bool:["aprobado","true"],char:["letra","A"]};
+const vars=[];
+$("vt").onchange=()=>{const p=ph[$("vt").value];$("vn").value=p[0];$("vv").value=p[1]};
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function declarar(){
+ const t=$("vt").value,n=$("vn").value.trim(),v=$("vv").value.trim(),o=$("vout");
+ let e="";
+ if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(n))e="Nombre inválido: usa letras, números o _ y no empieces con número.";
+ else if(vars.some(x=>x.n===n))e=`Error CS0128: ya existe una variable llamada '${n}'.`;
+ else if(t==="int"&&!/^-?\d+$/.test(v))e=`Error CS0029: no se puede convertir '${v}' a int. Un int solo guarda enteros.`;
+ else if(t==="double"&&!/^-?\d+(\.\d+)?$/.test(v))e=`Error CS0029: '${v}' no es un número válido para double.`;
+ else if(t==="bool"&&!/^(true|false)$/.test(v))e="Error CS0029: bool solo acepta true o false (en minúscula).";
+ else if(t==="char"&&v.length!==1)e="Error CS1011: un char guarda exactamente una letra.";
+ if(e){o.innerHTML='<span class="err">'+esc(e)+"</span>";return}
+ const lit=t==="string"?`"${v}"`:t==="char"?`'${v}'`:v;
+ $("vcode").innerHTML=`<span class="${t==="string"||t==="int"||t==="double"||t==="bool"||t==="char"?"k":""}">${t}</span> ${esc(n)} = <span class="s">${esc(lit)}</span>;`;
+ vars.push({t,n,v:lit});
+ o.innerHTML="<b>Compilador:</b> ¡Correcto! Variable creada.";
+ draw();
+}
+function draw(){
+ $("mem").innerHTML=vars.length?vars.map(x=>`<div class="box"><div class="ty">${x.t}</div><div class="va">${esc(x.v)}</div><div class="na">${esc(x.n)}</div></div>`).join(""):'<span class="empty">Aún no hay variables.</span>';
+}
+$("vgo").onclick=declarar;
+$("vclr").onclick=()=>{vars.length=0;draw();$("vout").innerHTML="<b>Compilador:</b> memoria vacía."};
+
+// ===== If =====
+function ifUpd(){
+ const n=+$("nota").value;$("nv").textContent=n;$("nc").textContent=n;
+ document.querySelectorAll("[data-l]").forEach(l=>l.classList.remove("on"));
+ ["f0","f1","f2","f3","f4"].forEach(i=>$(i).classList.remove("on"));
+ let r,lines,nodes;
+ if(n>=9){r="Excelente";lines=[0,1,2];nodes=["f0","f1"]}
+ else if(n>=6){r="Aprobado";lines=[0,1,3,4];nodes=["f0","f2","f3"]}
+ else{r="Reprobado";lines=[0,1,3,5,6];nodes=["f0","f2","f4"]}
+ lines.forEach(l=>document.querySelector(`[data-l="${l}"]`).classList.add("on"));
+ nodes.forEach(i=>$(i).classList.add("on"));
+ $("iout").innerHTML=`<b>Salida:</b>\n${r}`;
+}
+$("nota").oninput=ifUpd;ifUpd();
+
+// ===== For =====
+let fi=0,fstate=0,fl=[],timer=null; // fstate: 0 init,1 cond,2 body,3 incr
+function fInit(){
+ clearInterval(timer);timer=null;$("fplay").textContent="▶ Auto";
+ const n=+$("n").value;$("nn").textContent=n;$("fc").textContent=n;
+ fi=0;fstate=0;fl=[];
+ $("cells").innerHTML=Array.from({length:n},(_,k)=>`<div class="cell" id="c${k}">${k}</div>`).join("");
+ $("si").textContent="–";$("sc").textContent="–";$("fout").innerHTML="<b>Salida:</b>\n";
+ mark(-1);
+}
+function mark(l){document.querySelectorAll("[data-f]").forEach(e=>e.classList.toggle("on",+e.dataset.f===l))}
+function fStep(){
+ const n=+$("n").value;
+ if(fstate==="end")return false;
+ if(fstate===0){$("si").textContent=0;mark(0);fstate=1}
+ else if(fstate===1){
+  const ok=fi<n;$("sc").textContent=ok+(ok?" ✔":" ✘");mark(0);
+  if(ok){fstate=2}else{fstate="end";mark(-1);document.querySelectorAll(".cell").forEach(c=>c.classList.remove("now"));return false}
+ }
+ else if(fstate===2){
+  mark(2);document.querySelectorAll(".cell").forEach(c=>c.classList.remove("now"));
+  $("c"+fi).classList.add("now");
+  fl.push("Vuelta "+fi);$("fout").innerHTML="<b>Salida:</b>\n"+fl.join("\n");fstate=3
+ }
+ else if(fstate===3){
+  $("c"+fi).classList.replace("now","done");fi++;$("si").textContent=fi;mark(0);fstate=1
+ }
+ return true;
+}
+$("fstep").onclick=fStep;
+$("freset").onclick=fInit;
+$("n").oninput=fInit;
+$("fplay").onclick=()=>{
+ if(timer){clearInterval(timer);timer=null;$("fplay").textContent="▶ Auto";return}
+ $("fplay").textContent="⏸ Pausa";
+ timer=setInterval(()=>{if(!fStep()){clearInterval(timer);timer=null;$("fplay").textContent="▶ Auto"}},450);
+};
+fInit();
+
+// ===== Quiz =====
+const Q=[
+ ["¿Qué tipo usarías para guardar el número 3.14?",["int","double","bool"],1,"double guarda decimales; int solo enteros."],
+ ["¿Cuántas veces se ejecuta for (int i = 0; i < 4; i++)?",["3","4","5"],1,"i toma los valores 0, 1, 2 y 3: son 4 vueltas."],
+ ["Si nota vale 6, ¿qué imprime el ejemplo de condicionales?",["Excelente","Aprobado","Reprobado"],1,"6 no llega a 9, pero cumple nota >= 6."]
+];
+$("qz").innerHTML=Q.map((q,i)=>`<div class="q"><b>${i+1}. ${q[0]}</b><div class="opts">${q[1].map((o,j)=>`<button data-q="${i}" data-o="${j}">${o}</button>`).join("")}</div><div class="mono" style="font-size:.85rem;margin-top:6px;color:var(--mut)" id="qf${i}"></div></div>`).join("");
+$("qz").onclick=e=>{
+ const b=e.target.closest("button");if(!b)return;
+ const i=+b.dataset.q,j=+b.dataset.o,ok=j===Q[i][2];
+ b.parentNode.querySelectorAll("button").forEach(x=>x.classList.remove("ok","no"));
+ b.classList.add(ok?"ok":"no");
+ $("qf"+i).textContent=ok?"¡Correcto! "+Q[i][3]:"Casi. Inténtalo de nuevo.";
+};
+</script>
+</body>
+</html>
